@@ -13,11 +13,11 @@ version: '3.8'
 services:
   # -------------------- Laravel API --------------------
   app:
-    image: ghcr.io/${GITHUB_USERNAME:-nicoagusta}/wa-crm-astra:${APP_VERSION:-latest}
-    # Atau build langsung:
-    # build:
-    #   context: .
-    #   dockerfile: Dockerfile
+    # image: ghcr.io/${GITHUB_USERNAME:-nicoagusta}/wa-crm-astra:${APP_VERSION:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wa-crm-app
     container_name: wa-crm-app
     restart: unless-stopped
     ports:
