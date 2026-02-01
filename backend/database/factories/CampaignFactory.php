@@ -9,14 +9,14 @@ class CampaignFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->sentence(4),
+            'name' => fake()->sentence(4),
             'message_template' => 'Halo [Nama], ada promo spesial untuk [Kendaraan]!',
             'media_path' => null,
-            'status' => $this->faker->randomElement(['draft', 'scheduled', 'running', 'completed']),
+            'status' => fake()->randomElement(['draft', 'scheduled', 'running', 'completed']),
             'scheduled_at' => null,
             'started_at' => null,
             'completed_at' => null,
-            'total_recipients' => $this->faker->numberBetween(10, 500),
+            'total_recipients' => fake()->numberBetween(10, 500),
             'sent_count' => 0,
             'delivered_count' => 0,
             'read_count' => 0,

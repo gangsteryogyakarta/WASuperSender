@@ -9,8 +9,8 @@ class SegmentFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->words(3, true),
-            'description' => $this->faker->sentence(),
+            'name' => fake()->words(3, true),
+            'description' => fake()->sentence(),
             'criteria' => [
                 ['field' => 'lead_status', 'operator' => '=', 'value' => 'new'],
             ],

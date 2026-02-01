@@ -17,17 +17,17 @@ class ContactFactory extends Factory
         $sources = ['showroom', 'referral', 'online', 'exhibition', 'walk-in'];
 
         return [
-            'phone' => '08' . $this->faker->numerify('##########'),
-            'name' => $this->faker->name(),
-            'email' => $this->faker->optional()->safeEmail(),
-            'lead_status' => $this->faker->randomElement([
+            'phone' => '08' . fake()->numerify('##########'),
+            'name' => fake()->name(),
+            'email' => fake()->optional()->safeEmail(),
+            'lead_status' => fake()->randomElement([
                 'new', 'contacted', 'qualified', 'proposal', 'negotiation', 'closed_won', 'closed_lost'
             ]),
-            'vehicle_interest' => $this->faker->randomElement($vehicles),
-            'budget' => $this->faker->randomElement([
+            'vehicle_interest' => fake()->randomElement($vehicles),
+            'budget' => fake()->randomElement([
                 150000000, 200000000, 250000000, 300000000, 400000000, 500000000, 750000000, 1000000000
             ]),
-            'source' => $this->faker->randomElement($sources),
+            'source' => fake()->randomElement($sources),
             'metadata' => null,
             'assigned_to' => null,
         ];
