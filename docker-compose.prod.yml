@@ -58,8 +58,8 @@ services:
   # -------------------- Frontend (Next.js) --------------------
   frontend:
     build:
-      context: .
-      dockerfile: frontend/Dockerfile
+      context: ./frontend
+      dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_API_URL: http://port.nicoagusta.id:8081
     container_name: wa-crm-frontend
