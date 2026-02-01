@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # WAHA - WhatsApp HTTP API
+  waha:
+    image: devlikeapro/waha:latest
+    container_name: waha-server
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      # Authentication
+      - WHATSAPP_API_KEY=${WAHA_API_KEY:-your-secure-api-key}
+      
+      # Session management
+      - WHATSAPP_DEFAULT_ENGINE=WEBJS
+      - WHATSAPP_RESTART_ALL_SESSIONS=true
+      
+      # Webhook configuration
+      - WHATSAPP_HOOK_URL=http://host.docker.internal:8000/api/webhook/waha
+      - WHATSAPP_HOOK_EVENTS=message,message.ack,session.status
+      
+      # Storage
+      - WHATSAPP_FILES_MIMETYPES=image/jpeg,image/png,application/pdf,video/mp4
+      - WHATSAPP_FILES_LIFETIME=180
+    volumes:
+      - waha_sessions:/app/.wwebjs_auth
+      - waha_files:/app/files
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # Redis for Queue and Cache
+  redis:
+    image: redis:7-alpine
+    container_name: wa-crm-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: wa-crm-mysql
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_DATABASE: ${DB_DATABASE:-wa_crm_astra}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+
+volumes:
+  waha_sessions:
+  waha_files:
+  redis_data:
+  mysql_data:

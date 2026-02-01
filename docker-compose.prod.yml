@@ -1,0 +1,123 @@
+# =====================================================
+# WA CRM Astra - Production Stack untuk Portainer
+# =====================================================
+# Deploy via Portainer:
+# 1. Stacks > Add stack
+# 2. Paste konten ini
+# 3. Set environment variables
+# 4. Deploy the stack
+# =====================================================
+
+version: '3.8'
+
+services:
+  # -------------------- Laravel API --------------------
+  app:
+    image: ghcr.io/${GITHUB_USERNAME:-nicoagusta}/wa-crm-astra:${APP_VERSION:-latest}
+    # Atau build langsung:
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    container_name: wa-crm-app
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8080}:80"
+    environment:
+      - APP_NAME=WA CRM Astra
+      - APP_ENV=production
+      - APP_KEY=${APP_KEY}
+      - APP_DEBUG=false
+      - APP_URL=${APP_URL:-https://wa-crm.nicoagusta.id}
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=${DB_DATABASE:-wa_crm_astra}
+      - DB_USERNAME=${DB_USERNAME:-wacrm}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - CACHE_STORE=redis
+      - QUEUE_CONNECTION=redis
+      - SESSION_DRIVER=redis
+      - WAHA_BASE_URL=http://waha:3000
+      - WAHA_API_KEY=${WAHA_API_KEY}
+      - WAHA_RATE_LIMIT_PER_MINUTE=30
+      - WAHA_MESSAGE_DELAY=2
+    volumes:
+      - app_storage:/var/www/storage
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - wa-crm-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wacrm.rule=Host(`wa-crm.nicoagusta.id`)"
+      - "traefik.http.routers.wacrm.entrypoints=websecure"
+      - "traefik.http.routers.wacrm.tls.certresolver=letsencrypt"
+
+  # -------------------- WAHA WhatsApp API --------------------
+  waha:
+    image: devlikeapro/waha:latest
+    container_name: wa-crm-waha
+    restart: unless-stopped
+    ports:
+      - "${WAHA_PORT:-3000}:3000"
+    environment:
+      - WHATSAPP_API_KEY=${WAHA_API_KEY}
+      - WHATSAPP_DEFAULT_ENGINE=WEBJS
+      - WHATSAPP_RESTART_ALL_SESSIONS=true
+      - WHATSAPP_HOOK_URL=http://app:80/api/webhook/waha
+      - WHATSAPP_HOOK_EVENTS=message,message.ack,session.status
+      - WHATSAPP_FILES_MIMETYPES=image/jpeg,image/png,application/pdf,video/mp4
+      - WHATSAPP_FILES_LIFETIME=180
+    volumes:
+      - waha_sessions:/app/.wwebjs_auth
+      - waha_files:/app/files
+    networks:
+      - wa-crm-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.waha.rule=Host(`waha.nicoagusta.id`)"
+      - "traefik.http.routers.waha.entrypoints=websecure"
+      - "traefik.http.routers.waha.tls.certresolver=letsencrypt"
+
+  # -------------------- MySQL Database --------------------
+  mysql:
+    image: mysql:8.0
+    container_name: wa-crm-mysql
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DB_DATABASE:-wa_crm_astra}
+      - MYSQL_USER=${DB_USERNAME:-wacrm}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - wa-crm-network
+    command: --default-authentication-plugin=mysql_native_password
+
+  # -------------------- Redis Cache/Queue --------------------
+  redis:
+    image: redis:7-alpine
+    container_name: wa-crm-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - wa-crm-network
+    command: redis-server --appendonly yes
+
+# -------------------- Volumes --------------------
+volumes:
+  app_storage:
+  waha_sessions:
+  waha_files:
+  mysql_data:
+  redis_data:
+
+# -------------------- Networks --------------------
+networks:
+  wa-crm-network:
+    driver: bridge
