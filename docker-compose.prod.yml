@@ -20,7 +20,7 @@ services:
     container_name: wa-crm-app
     restart: unless-stopped
     ports:
-      - "${APP_PORT:-8080}:80"
+      - "8081:80"
     environment:
       - APP_NAME=WA CRM Astra
       - APP_ENV=production
@@ -54,6 +54,28 @@ services:
       - "traefik.http.routers.wacrm.rule=Host(`wa-crm.nicoagusta.id`)"
       - "traefik.http.routers.wacrm.entrypoints=websecure"
       - "traefik.http.routers.wacrm.tls.certresolver=letsencrypt"
+
+  # -------------------- Frontend (Next.js) --------------------
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://port.nicoagusta.id:8081
+    container_name: wa-crm-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - app
+    networks:
+      - wa-crm-network
+    labels:
+        # Optional: Traefik config if user wants to use subdomain later
+      - "traefik.enable=true"
+      - "traefik.http.routers.wa-frontend.rule=Host(`wa-app.nicoagusta.id`)" # Placeholder
+      - "traefik.http.routers.wa-frontend.entrypoints=websecure"
+      - "traefik.http.routers.wa-frontend.tls.certresolver=letsencrypt"
 
   # -------------------- WAHA WhatsApp API --------------------
   waha:

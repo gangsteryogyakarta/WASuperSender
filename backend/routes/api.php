@@ -21,6 +21,12 @@ Route::post('/webhook/waha', [WebhookController::class, 'handle'])->name('webhoo
 // Health check (no auth)
 Route::get('/health', [SessionController::class, 'health'])->name('health');
 
+// Auth
+use App\Http\Controllers\Api\AuthController;
+
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
 // Protected routes (require authentication)
 Route::middleware('auth:sanctum')->group(function () {
     // User info
