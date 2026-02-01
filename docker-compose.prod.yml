@@ -13,10 +13,10 @@ version: '3.8'
 services:
   # -------------------- Laravel API --------------------
   app:
-    # image: ghcr.io/${GITHUB_USERNAME:-nicoagusta}/wa-crm-astra:${APP_VERSION:-latest}
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/gangsteryogyakarta/wasupersender-backend:latest
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
     container_name: wa-crm-app
     restart: unless-stopped
     ports:
@@ -57,11 +57,12 @@ services:
 
   # -------------------- Frontend (Next.js) --------------------
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        NEXT_PUBLIC_API_URL: http://port.nicoagusta.id:8081
+    image: ghcr.io/gangsteryogyakarta/wasupersender-frontend:latest
+    # build:
+    #   context: ./frontend
+    #   dockerfile: Dockerfile
+    #   args:
+    #     NEXT_PUBLIC_API_URL: http://port.nicoagusta.id:8081
     container_name: wa-crm-frontend
     restart: unless-stopped
     ports:
