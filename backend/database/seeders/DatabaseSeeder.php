@@ -17,24 +17,30 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Create admin user
-        User::create([
-            'name' => 'Admin Sales',
-            'email' => 'admin@astra.co.id',
-            'password' => Hash::make('password'),
-        ]);
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@astra.co.id'],
+            [
+                'name' => 'Admin Sales',
+                'password' => Hash::make('password'),
+            ]
+        );
 
         // Create sales users
-        $sales1 = User::create([
-            'name' => 'Budi Santoso',
-            'email' => 'budi@astra.co.id',
-            'password' => Hash::make('password'),
-        ]);
+        $sales1 = User::firstOrCreate(
+            ['email' => 'budi@astra.co.id'],
+            [
+                'name' => 'Budi Santoso',
+                'password' => Hash::make('password'),
+            ]
+        );
 
-        $sales2 = User::create([
-            'name' => 'Dewi Kartika',
-            'email' => 'dewi@astra.co.id',
-            'password' => Hash::make('password'),
-        ]);
+        $sales2 = User::firstOrCreate(
+            ['email' => 'dewi@astra.co.id'],
+            [
+                'name' => 'Dewi Kartika',
+                'password' => Hash::make('password'),
+            ]
+        );
 
         // Create sample contacts
         Contact::factory()->count(50)->create([
