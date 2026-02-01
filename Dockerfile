@@ -27,7 +27,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www
 
 # Copy composer files first for caching
-COPY backend/composer.json backend/composer.lock ./
+COPY backend/composer.json ./
 
 # Install dependencies
 RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist
