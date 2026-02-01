@@ -12,10 +12,14 @@ RUN apk add --no-cache \
     unzip \
     libzip-dev \
     icu-dev \
-    mysql-client
+    mysql-client \
+    freetype-dev \
+    libjpeg-turbo-dev \
+    linux-headers
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip intl opcache
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip intl opcache
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -40,6 +44,8 @@ FROM php:8.2-fpm-alpine
 # Install production dependencies
 RUN apk add --no-cache \
     libpng \
+    libjpeg-turbo \
+    freetype \
     oniguruma \
     libxml2 \
     libzip \
@@ -47,8 +53,9 @@ RUN apk add --no-cache \
     nginx \
     supervisor
 
-# Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip intl opcache
+# Copy PHP extensions from builder
+COPY --from=builder /usr/local/lib/php/extensions /usr/local/lib/php/extensions
+COPY --from=builder /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d
 
 # Copy application from builder
 COPY --from=builder /var/www /var/www
