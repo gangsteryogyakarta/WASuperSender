@@ -2,7 +2,7 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm install
 
 # Stage 2: Build the app
 FROM node:20-alpine AS builder
@@ -13,6 +13,8 @@ COPY . .
 # Build args for Environment Variables
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV CI=false
 
 RUN npm run build
 
