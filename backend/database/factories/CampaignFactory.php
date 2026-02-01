@@ -8,8 +8,6 @@ class CampaignFactory extends Factory
 {
     public function definition(): array
     {
-    public function definition(): array
-    {
         $faker = \Faker\Factory::create('id_ID');
         return [
             'name' => $faker->sentence(4),
