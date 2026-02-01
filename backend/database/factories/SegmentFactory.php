@@ -8,9 +8,10 @@ class SegmentFactory extends Factory
 {
     public function definition(): array
     {
+        $faker = \Faker\Factory::create('id_ID');
         return [
-            'name' => fake()->words(3, true),
-            'description' => fake()->sentence(),
+            'name' => $faker->words(3, true),
+            'description' => $faker->sentence(),
             'criteria' => [
                 ['field' => 'lead_status', 'operator' => '=', 'value' => 'new'],
             ],

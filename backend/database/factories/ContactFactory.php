@@ -16,18 +16,20 @@ class ContactFactory extends Factory
 
         $sources = ['showroom', 'referral', 'online', 'exhibition', 'walk-in'];
 
+        $faker = \Faker\Factory::create('id_ID');
+
         return [
-            'phone' => '08' . fake()->numerify('##########'),
-            'name' => fake()->name(),
-            'email' => fake()->optional()->safeEmail(),
-            'lead_status' => fake()->randomElement([
+            'phone' => '08' . $faker->numerify('##########'),
+            'name' => $faker->name(),
+            'email' => $faker->optional()->safeEmail(),
+            'lead_status' => $faker->randomElement([
                 'new', 'contacted', 'qualified', 'proposal', 'negotiation', 'closed_won', 'closed_lost'
             ]),
-            'vehicle_interest' => fake()->randomElement($vehicles),
-            'budget' => fake()->randomElement([
+            'vehicle_interest' => $faker->randomElement($vehicles),
+            'budget' => $faker->randomElement([
                 150000000, 200000000, 250000000, 300000000, 400000000, 500000000, 750000000, 1000000000
             ]),
-            'source' => fake()->randomElement($sources),
+            'source' => $faker->randomElement($sources),
             'metadata' => null,
             'assigned_to' => null,
         ];
